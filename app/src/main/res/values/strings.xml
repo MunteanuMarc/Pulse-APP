@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">ActiPulseApp</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="stop">Stop</string>
+    <string name="txt_view">txt view</string>
+    <string name="start">Start</string>
+    <string name="sensor_pulse">Sensor Pulse = ????</string>
+    <string name="txt_string">txt string</string>
+    <string name="running_default">Running Default</string>
+    <string name="_15_june">15 June</string>
+    <string name="_10m">10m</string>
+    <string name="scan">Scanning...</string>
+    <string name="connection">Connection</string>
+    <string name="connecting">Connecting ... </string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="my_pulse_device">My Pulse Device</string>
+    <string name="notfound">Device Unavailable</string>
+</resources>
