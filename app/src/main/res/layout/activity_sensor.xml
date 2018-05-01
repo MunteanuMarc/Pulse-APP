@@ -53,5 +53,15 @@
         android:text="@string/connection"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
+  <ProgressBar
+        android:id="@+id/progressBar_cyclic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="70dp"
+        android:minWidth="70dp"
+        android:visibility="visible"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:max="100"/>
 
 </RelativeLayout>
