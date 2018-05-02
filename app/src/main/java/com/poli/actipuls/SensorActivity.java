@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import com.poli.actipuls.accelerometer.AccelerometerHelper;
 import com.poli.actipuls.bluetooth.BluetoothController;
@@ -50,6 +51,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
     private DatabaseHelper dbHelper;
     private SQLiteDatabase mDb;
     Cursor cursor;
+    private ProgressBar progressBar;
     private BluetoothController btControl;
     private SensorManager sensorManager;
     private Button buttonStart, buttonStop;
@@ -108,6 +110,15 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         // Start Scanning
         // TODO implement a progress circle
         startScan();
+         Button startButton = (Button) findViewById(R.id.btnStart);
+            // perform click event on button
+            startButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick( View v ) {
+                    // visible the progress bar
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+            });
 
         // click listener for button start
         buttonStart.setOnClickListener((View v) -> {
