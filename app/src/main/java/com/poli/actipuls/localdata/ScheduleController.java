@@ -21,53 +21,55 @@ public class ScheduleController {
     LocalDbHelper dbHelper;
 
     private Activity myActivity;
-    private SQLiteDatabase db;
-    private int pulse;
     private ScheduledExecutorService scheduler;
 
     /**
-     * @param a
+     * Constructor
+     * @param a represents the activity that will use the Scheduler
      */
     public ScheduleController(Activity a) {
         myActivity = a;
         dbHelper = new LocalDbHelper(myActivity);
-        db = dbHelper.getWritableDatabase();
     }
+
     public void startScheduler() {
         scheduler = Executors.newScheduledThreadPool(1);
+        // Calculate the Pulse every 30 seconds
         scheduler.scheduleAtFixedRate(new Runnable() {
-                                                   public void run() {
-                                                       Log.i(TAG, "Calculating pulse ----------");
-                                                       dbHelper.calculatePulse();
-                                                   }
-                                               },
-                0,
+                                          public void run() {
+                                              Log.i(TAG, "Calculating pulse ----------");
+                                              dbHelper.calculatePulse();
+                                          }
+                                      },
+                30,
                 30,
                 TimeUnit.SECONDS);
+        // Clean the local database every 3 minutes
         scheduler.scheduleAtFixedRate(new Runnable() {
-                                                    public void run() {
-                                                        Log.i(TAG, "Cleaning in process ----------");
-                                                        dbHelper.deleteProcessedData();
-                                                    }
-                                                },
-                10,
-                40,
+                                          public void run() {
+                                              Log.i(TAG, "Cleaning in process ----------");
+                                              dbHelper.deleteProcessedData();
+                                          }
+                                      },
+                180,
+                180,
                 TimeUnit.SECONDS);
+        // insert pulse data in local database every second
         scheduler.scheduleAtFixedRate(new Runnable() {
-                                                    public void run() {
-                                                        dbHelper.insertData();
-                                                    }
-                                                },
+                                          public void run() {
+                                              dbHelper.insertData();
+                                          }
+                                      },
                 0,
                 1,
                 TimeUnit.SECONDS);
     }
 
-    public int getPulse() {
-        return pulse;
-    }
-
-    public void shutDownExecutor() {
+    /*
+    Method to shut down the executor and close the local DB
+     */
+    public void shutDown() {
         scheduler.shutdown();
+        dbHelper.closeLocalDb();
     }
 }

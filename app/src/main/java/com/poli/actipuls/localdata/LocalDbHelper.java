@@ -13,20 +13,23 @@ import com.poli.actipuls.localdata.LocalDbPulseContract.LocalDbPulseEntry;
 
 public class LocalDbHelper extends SQLiteOpenHelper {
 
+    // the database name
     private static final String DATABASE_NAME = "actipuls.db";
-
     // Tag for Logging
     private final static String TAG = LocalDbHelper.class.getSimpleName();
-
+    // Get the database
     private final SQLiteDatabase db = getWritableDatabase();
-
-
+    // database version
     private static final int DATABASE_VERSION = 1;
 
     public LocalDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    /**
+     * On create method
+     * @param sqLiteDatabase
+     */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
@@ -40,6 +43,12 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SQL_CREATE_TABLE);
     }
 
+    /**
+     *
+     * @param db
+     * @param oldVersion
+     * @param newVersion
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + LocalDbPulseEntry.TABLE_NAME);
@@ -78,46 +87,48 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         String sql = "SELECT SUM(" + LocalDbPulseEntry.COLUMN_PULSE + ") FROM " + LocalDbPulseEntry.TABLE_NAME + " WHERE " + LocalDbPulseEntry.COLUMN_PROCESSED + " = 0";
         // query string to set table entried as processed in order for cleaning
         Log.i(TAG, sql);
-        setProcessed();
         // execute the raw queries
         Cursor cursor = db.rawQuery(sql, null);
+        // setting the proccesed data entries to 1
         // return the data
         if (cursor.moveToFirst()) {
             int sum = cursor.getInt(0);
             Log.i(TAG, "!------------ HeartsBeats per 30 sec : " + sum);
         }
         cursor.close();
+        setProcessed();
     }
 
     /**
-     *
+     * Method to set the processed rows to 1
      */
     private void setProcessed() {
-        Log.i(TAG, "Processing");
-        ContentValues cv = new ContentValues();
-        try {
-            db.beginTransaction();
-            cv.put(LocalDbPulseEntry.COLUMN_PROCESSED, 1);
-            // "WHERE " + LocalDbPulseEntry.COLUMN_PROCESSED + " = "
-            db.update(LocalDbPulseEntry.TABLE_NAME, cv,  LocalDbPulseEntry.COLUMN_PROCESSED + " = ?", new String[]{"0"});
-        } catch (SQLException e) {
-            Log.e(TAG, "-----------------------------------Exception SQL \n" + e);
-        } finally {
-            db.endTransaction();
-        }
+        // New value
+        int value = 1;
+        ContentValues values = new ContentValues();
+        values.put(LocalDbPulseEntry.COLUMN_PROCESSED, value);
+        db.update(
+                LocalDbPulseEntry.TABLE_NAME,
+                values,
+                null,
+                null);
     }
+
     /**
-     *
+     *Method to delete the processed rows
      */
     public void deleteProcessedData() {
-        calculateProccesed();
-        calculateNotProccesed();
-        Cursor cursor = getAllDataInTable();
-        Log.i(TAG,"Data =========" +cursor.getCount() );
-        cursor.close();
-        db.delete(LocalDbPulseEntry.TABLE_NAME, LocalDbPulseEntry.COLUMN_PROCESSED + " = ?", new String[]{"1"});
+        // Define 'where' part of query.
+        String selection = LocalDbPulseEntry.COLUMN_PROCESSED + " LIKE ?";
+        // Arguments in placeholder order.
+        String[] selectionArgs = {"1"};
+        db.delete(LocalDbPulseEntry.TABLE_NAME, selection, selectionArgs);
     }
+
     /**
+     * Unused method
+     * Maybe useful later otherwise will be deleted in final version
+     *
      * @return All the Data in the table
      */
     public Cursor getAllDataInTable() {
@@ -130,33 +141,5 @@ public class LocalDbHelper extends SQLiteOpenHelper {
                 null,
                 null
         );
-    }
-    public void calculateProccesed(){
-        // query string to calculate the sum of all heartbeats in the last 30 seconds
-        String sql = "SELECT COUNT(" + LocalDbPulseEntry.COLUMN_PULSE + ") FROM " + LocalDbPulseEntry.TABLE_NAME + " WHERE " + LocalDbPulseEntry.COLUMN_PROCESSED + " = 1";
-        // query string to set table entried as processed in order for cleaning
-        Log.i(TAG, sql);
-        // execute the raw queries
-        Cursor cursor = db.rawQuery(sql, null);
-        // return the data
-        if (cursor.moveToFirst()) {
-            int sum = cursor.getInt(0);
-            Log.i(TAG, "!------------ Proccesed : " + sum);
-        }
-        cursor.close();
-    }
-    public void calculateNotProccesed(){
-        // query string to calculate the sum of all heartbeats in the last 30 seconds
-        String sql = "SELECT COUNT(" + LocalDbPulseEntry.COLUMN_PULSE + ") FROM " + LocalDbPulseEntry.TABLE_NAME + " WHERE " + LocalDbPulseEntry.COLUMN_PROCESSED + " = 0";
-        // query string to set table entried as processed in order for cleaning
-        Log.i(TAG, sql);
-        // execute the raw queries
-        Cursor cursor = db.rawQuery(sql, null);
-        // return the data
-        if (cursor.moveToFirst()) {
-            int sum = cursor.getInt(0);
-            Log.i(TAG, "!------------ Not Proccesed : " + sum);
-        }
-        cursor.close();
     }
 }

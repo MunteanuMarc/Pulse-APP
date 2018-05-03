@@ -26,9 +26,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.poli.actipuls.accelerometer.AccelerometerHelper;
-import com.poli.actipuls.localdata.ScheduleController;
 import com.poli.actipuls.bluetooth.BluetoothHelper;
 import com.poli.actipuls.data.DatabaseHelper;
+import com.poli.actipuls.localdata.ScheduleController;
 import com.poli.actipuls.model.HealthData;
 
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
     private BluetoothLeScanner scanner;
     private DatabaseHelper dbHelper;
     private ProgressBar progressBar;
-    private ScheduleController btControl;
+    private ScheduleController scheduleControl;
     private SensorManager sensorManager;
     private Button buttonStart, buttonStop;
     private TextView connectionState;
@@ -68,6 +68,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
     private Handler handler;
     private boolean isScanning = false;
     private Map<String, BluetoothDevice> scanResults;
+
     // Scan Callback
     private ScanCallback callback = new ScanCallback() {
         @Override
@@ -91,7 +92,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         // initialize bluetooth adapter
         blueToothAdapter = btHelper.getBluetoothAdapter(this);
         // initialize a bluetooth controller
-        btControl = new ScheduleController(this);
+        scheduleControl = new ScheduleController(this);
         // get the permissions
         btHelper.getPermissions(blueToothAdapter);
         // find views from the UI
@@ -113,11 +114,10 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
             //on click
             updateConnectionState(R.string.connecting);
             connectGattService();
-            btControl.startScheduler();
-
+            scheduleControl.startScheduler();
 
             // TODO method addItem adds mock data to the azure database, must fix to add real data
-           // addItem();
+            // addItem();
             buttonStop.setVisibility(View.VISIBLE);
             buttonStart.setVisibility(View.INVISIBLE);
         });
@@ -130,7 +130,8 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
             btHelper.disconnect(blueToothAdapter);
             buttonStop.setVisibility(View.INVISIBLE);
             buttonStart.setVisibility(View.VISIBLE);
-            btControl.shutDownExecutor();
+            scheduleControl.shutDown();
+
         });
 
         dbHelper = new DatabaseHelper();
