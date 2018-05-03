@@ -101,24 +101,16 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         // find views from the UI
         buttonStart = findViewById(R.id.btnStart);
         buttonStop = findViewById(R.id.btnStop);
+        progressBar = findViewById(R.id.progressBar_cyclic);
         connectionState = findViewById(R.id.connectionState);
      // buttonStart.setVisibility(View.INVISIBLE);
       //  buttonStart.setEnabled(false);
         buttonStop.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
 
 
         // Start Scanning
-        // TODO implement a progress circle
         startScan();
-         Button startButton = (Button) findViewById(R.id.btnStart);
-            // perform click event on button
-            startButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick( View v ) {
-                    // visible the progress bar
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-            });
 
         // click listener for button start
         buttonStart.setOnClickListener((View v) -> {
@@ -130,6 +122,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
 
 
             btControl.startScheduler();
+            // for logging
             Cursor cursor = btControl.getAllDataInTable();
             Log.i(TAG,"Data =========" +cursor.getCount() );
 
@@ -207,6 +200,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         if (scanResults.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Device unavailable", Toast.LENGTH_LONG).show();
             updateConnectionState(R.string.notfound);
+            progressBar.setVisibility(View.GONE);
             return;
         }
         for (String deviceAddress : scanResults.keySet()) {
@@ -214,8 +208,10 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
                 myDevice = scanResults.get(deviceAddress);
                 Log.d("SCAN", "Found device: " + deviceAddress);
                 buttonStart.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
             } else {
                 updateConnectionState(R.string.notfound);
+                progressBar.setVisibility(View.GONE);
                 Toast.makeText(getApplicationContext(), "Device unavailable", Toast.LENGTH_LONG).show();
             }
         }

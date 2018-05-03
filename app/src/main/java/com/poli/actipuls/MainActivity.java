@@ -21,7 +21,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    // TODO optimision on the application : "The application may be doing too much work on its main thread".
+    // TODO optimisation on the application : "The application may be doing too much work on its main thread".
 
     private List<Activitati> results;
     private RecyclerView activitiesRecyclerView;

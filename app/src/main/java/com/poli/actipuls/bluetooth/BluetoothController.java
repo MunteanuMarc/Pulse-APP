@@ -48,7 +48,7 @@ public class BluetoothController {
         scheduler = Executors.newScheduledThreadPool(1);
         myTask = scheduler.scheduleAtFixedRate(new Runnable() {
                                                    public void run() {
-                                                       db.delete(LocalDbPulseEntry.TABLE_NAME, LocalDbPulseEntry.COLUMN_PROCESSED, new String[]{"1"});
+                                                       db.delete(LocalDbPulseEntry.TABLE_NAME, LocalDbPulseEntry.COLUMN_PROCESSED + " = ?", new String[]{"1"});
                                                        Log.i(TAG, "Cleaning in process ----------");
                                                    }
                                                },
@@ -82,8 +82,15 @@ public class BluetoothController {
         String sql = "SELECT SUM(" + LocalDbPulseEntry.COLUMN_PULSE + ") FROM " + LocalDbPulseEntry.TABLE_NAME + " WHERE " + LocalDbPulseEntry.COLUMN_PROCESSED + "= 0";
         // query string to set table entried as processed in order for cleaning
         ContentValues cv = new ContentValues();
-        cv.put(LocalDbPulseEntry.COLUMN_PROCESSED, 1);
-        db.update(LocalDbPulseEntry.TABLE_NAME, cv, null, null);
+        try {
+            db.beginTransaction();
+            cv.put(LocalDbPulseEntry.COLUMN_PROCESSED, 1);
+            db.update(LocalDbPulseEntry.TABLE_NAME, cv, null, null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Exception SQL" + e);
+        } finally {
+            db.endTransaction();
+        }
         Log.i(TAG, sql);
         // execute the raw queries
         Cursor cursor = db.rawQuery(sql, new String[]{"0"});

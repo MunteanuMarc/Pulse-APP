@@ -59,9 +59,10 @@
         android:layout_height="wrap_content"
         android:minHeight="70dp"
         android:minWidth="70dp"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:max="100"/>
+        android:max="100"
+      />
 
 </RelativeLayout>
