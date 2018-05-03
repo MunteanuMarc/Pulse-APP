@@ -9,8 +9,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -23,12 +21,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ProgressBar;
 
 import com.poli.actipuls.accelerometer.AccelerometerHelper;
-import com.poli.actipuls.bluetooth.BluetoothController;
+import com.poli.actipuls.localdata.ScheduleController;
 import com.poli.actipuls.bluetooth.BluetoothHelper;
 import com.poli.actipuls.data.DatabaseHelper;
 import com.poli.actipuls.model.HealthData;
@@ -49,10 +47,8 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
     private BluetoothDevice myDevice;
     private BluetoothLeScanner scanner;
     private DatabaseHelper dbHelper;
-    private SQLiteDatabase mDb;
-    Cursor cursor;
     private ProgressBar progressBar;
-    private BluetoothController btControl;
+    private ScheduleController btControl;
     private SensorManager sensorManager;
     private Button buttonStart, buttonStop;
     private TextView connectionState;
@@ -95,7 +91,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         // initialize bluetooth adapter
         blueToothAdapter = btHelper.getBluetoothAdapter(this);
         // initialize a bluetooth controller
-        btControl = new BluetoothController(this);
+        btControl = new ScheduleController(this);
         // get the permissions
         btHelper.getPermissions(blueToothAdapter);
         // find views from the UI
@@ -103,11 +99,9 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         buttonStop = findViewById(R.id.btnStop);
         progressBar = findViewById(R.id.progressBar_cyclic);
         connectionState = findViewById(R.id.connectionState);
-     // buttonStart.setVisibility(View.INVISIBLE);
-      //  buttonStart.setEnabled(false);
+        buttonStart.setVisibility(View.INVISIBLE);
         buttonStop.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
-
 
         // Start Scanning
         startScan();
@@ -119,18 +113,16 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
             //on click
             updateConnectionState(R.string.connecting);
             connectGattService();
-
-
             btControl.startScheduler();
-            // for logging
-            Cursor cursor = btControl.getAllDataInTable();
-            Log.i(TAG,"Data =========" +cursor.getCount() );
+
 
             // TODO method addItem adds mock data to the azure database, must fix to add real data
            // addItem();
             buttonStop.setVisibility(View.VISIBLE);
             buttonStart.setVisibility(View.INVISIBLE);
         });
+
+
         // click listener for button stop
         buttonStop.setOnClickListener((View v) -> {
             Toast.makeText(getApplicationContext(), "Disconnecting...", Toast.LENGTH_LONG).show();
@@ -201,6 +193,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
             Toast.makeText(getApplicationContext(), "Device unavailable", Toast.LENGTH_LONG).show();
             updateConnectionState(R.string.notfound);
             progressBar.setVisibility(View.GONE);
+            buttonStart.setVisibility(View.VISIBLE);
             return;
         }
         for (String deviceAddress : scanResults.keySet()) {
@@ -212,6 +205,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
             } else {
                 updateConnectionState(R.string.notfound);
                 progressBar.setVisibility(View.GONE);
+                buttonStart.setVisibility(View.VISIBLE);
                 Toast.makeText(getApplicationContext(), "Device unavailable", Toast.LENGTH_LONG).show();
             }
         }
