@@ -115,7 +115,6 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
             updateConnectionState(R.string.connecting);
             connectGattService();
             scheduleControl.startScheduler();
-
             // TODO method addItem adds mock data to the azure database, must fix to add real data
             // addItem();
             buttonStop.setVisibility(View.VISIBLE);

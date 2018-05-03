@@ -142,4 +142,11 @@ public class LocalDbHelper extends SQLiteOpenHelper {
                 null
         );
     }
+
+    /**
+     * Method to close the db
+     */
+    public void closeLocalDb(){
+        db.close();
+    }
 }
