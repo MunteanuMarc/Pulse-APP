@@ -14,6 +14,9 @@ public class HealthData {
     @com.google.gson.annotations.SerializedName("Accelerometru")
     private String accelerometru;
 
+    @com.google.gson.annotations.SerializedName("alerta")
+    private boolean alert;
+
     public HealthData() {
     }
 
@@ -40,6 +43,14 @@ public class HealthData {
 
     public void setAccelerometru(String accelerometru) {
         this.accelerometru = accelerometru;
+    }
+
+    public boolean getAlert() {
+        return alert;
+    }
+
+    public void setAlert(boolean alert) {
+        this.alert = alert;
     }
 }
 

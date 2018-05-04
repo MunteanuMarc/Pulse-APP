@@ -68,44 +68,42 @@ public class RemoteDatabaseHelper {
      * Add a new item
      */
     public void addItem(int pulse) {
+        boolean alert = false;
         if (getClient() == null) {
             return;
         }
         // verify if pulse is under the normal limit
-        if(pulse < 60){
-
-            // TODO implement code for alarm pulse too low
+        if (pulse < 60) {
+            alert = true;
             Log.i(TAG, "Pulse is too low");
         }
         // verify if pulse is over the normal limit and the person is not exercising
-        else if(!isPulseNormal(pulse) && !accHelper.isExercising()){
-            // TODO implement code for alarm pulse too high
+        else if (!isPulseNormal(pulse) && !accHelper.isExercising()) {
+            alert = true;
             Log.i(TAG, "Pulse is too high");
         }
-        // otherwise pulse should be normal
-        else  {
-            // Create a new item
-            final HealthData item = new HealthData();
+        // Create a new item
+        final HealthData item = new HealthData();
 
-            item.setAccelerometru(accHelper.getAccelerometerData());
-            item.setPuls(String.valueOf(pulse));
+        item.setAccelerometru(accHelper.getAccelerometerData());
+        item.setPuls(String.valueOf(pulse));
+        item.setAlert(alert);
 
-            // Insert the new item
-            AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    try {
-                        addItemInTable(item);
+        // Insert the new item
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    addItemInTable(item);
 
-                    } catch (final Exception e) {
-                        Log.e(TAG, "insert Error" + e);
-                    }
-                    return null;
+                } catch (final Exception e) {
+                    Log.e(TAG, "insert Error" + e);
                 }
-            };
+                return null;
+            }
+        };
 
-            runAsyncTask(task);
-        }
+        runAsyncTask(task);
     }
 
     /**
@@ -124,7 +122,7 @@ public class RemoteDatabaseHelper {
 
     public boolean isPulseNormal(int pulse) {
         boolean normal = false;
-        if (pulse >=  60 && pulse <= 100) {
+        if (pulse >= 60 && pulse <= 100) {
             normal = true;
         }
         return normal;

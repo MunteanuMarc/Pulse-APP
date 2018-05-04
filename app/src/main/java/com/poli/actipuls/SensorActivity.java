@@ -268,4 +268,5 @@ public class SensorActivity extends AppCompatActivity  implements SensorEventLis
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // not implemented
     }
+
 }

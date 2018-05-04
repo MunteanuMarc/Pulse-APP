@@ -8,8 +8,6 @@ import android.util.Log;
 
 public class AccelerometerHelper {
 
-    // TODO accelerometer not working properly anymore - check
-
     private long lastUpdate;
     // initialize SensorManager
     private static String accelerometerData = "";
