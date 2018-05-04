@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,7 +31,7 @@ import com.poli.actipuls.localdata.ScheduleController;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SensorActivity extends AppCompatActivity{
+public class SensorActivity extends AppCompatActivity  implements SensorEventListener {
 
     // scan period in milliseconds
     private static final long SCAN_PERIOD = 10000;
@@ -40,7 +42,7 @@ public class SensorActivity extends AppCompatActivity{
     private BluetoothAdapter blueToothAdapter;
     private BluetoothHelper btHelper = new BluetoothHelper(this);
     private BluetoothDevice myDevice;
-    private AccelerometerHelper acc = new AccelerometerHelper();
+    private AccelerometerHelper acc;
     private BluetoothLeScanner scanner;
     private RemoteDatabaseHelper dbHelper;
     private ProgressBar progressBar;
@@ -81,7 +83,8 @@ public class SensorActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
-
+        // initialize accelerometerHelper
+        acc = new AccelerometerHelper();
         // initialize SensorManager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         // initialize bluetooth adapter
@@ -227,7 +230,7 @@ public class SensorActivity extends AppCompatActivity{
         registerReceiver(mGattUpdateReceiver, updateIntentFilter());
         // register this class as a listener for the orientation and
         // accelerometer sensors
-        sensorManager.registerListener(acc,
+        sensorManager.registerListener(this,
                 sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -239,7 +242,7 @@ public class SensorActivity extends AppCompatActivity{
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mGattUpdateReceiver);
-        sensorManager.unregisterListener(acc);
+        sensorManager.unregisterListener(this);
     }
 
     /**
@@ -254,4 +257,15 @@ public class SensorActivity extends AppCompatActivity{
         return intentFilter;
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            acc.getAccelerometer(event);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // not implemented
+    }
 }

@@ -6,13 +6,13 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-public class AccelerometerHelper  implements SensorEventListener {
+public class AccelerometerHelper {
 
-    // TODO accelerometer not working properly anymore - check 
+    // TODO accelerometer not working properly anymore - check
 
     private long lastUpdate;
     // initialize SensorManager
-    private String accelerometerData = "";
+    private static String accelerometerData = "";
     private float accelerationSquareRoot;
     // Tag for Logging
     private final static String TAG = AccelerometerHelper.class.getSimpleName();
@@ -65,17 +65,7 @@ public class AccelerometerHelper  implements SensorEventListener {
         return accelerationSquareRoot;
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            getAccelerometer(event);
-        }
-    }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // not implemented
-    }
     /**
      * Verifies if there is movement according to the accelerometer
      *
