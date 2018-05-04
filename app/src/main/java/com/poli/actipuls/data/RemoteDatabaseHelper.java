@@ -64,23 +64,29 @@ public class RemoteDatabaseHelper {
         return client;
     }
 
-    /**
-     * Add a new item
-     */
-    public void addItem(int pulse) {
+    public void addAlertItem(int pulse){
         boolean alert = false;
-        if (getClient() == null) {
-            return;
-        }
         // verify if pulse is under the normal limit
         if (pulse < 60) {
             alert = true;
             Log.i(TAG, "Pulse is too low");
         }
         // verify if pulse is over the normal limit and the person is not exercising
-        else if (!isPulseNormal(pulse) && !accHelper.isExercising()) {
+        else if (pulse > 100 && !isExercising()) {
             alert = true;
             Log.i(TAG, "Pulse is too high");
+        }
+        addItem(pulse, alert);
+    }
+    /**
+     * Add a new item
+     */
+    public void addItem(int pulse, boolean alert) {
+        if (getClient() == null) {
+            return;
+        }
+        if(alert){
+            // TODO implement code to ask and send message
         }
         // Create a new item
         final HealthData item = new HealthData();
@@ -119,12 +125,15 @@ public class RemoteDatabaseHelper {
             return task.execute();
         }
     }
-
-    public boolean isPulseNormal(int pulse) {
-        boolean normal = false;
-        if (pulse >= 60 && pulse <= 100) {
-            normal = true;
+    /**
+     * Verifies if there is movement according to the accelerometer
+     *
+     * @return
+     */
+    public boolean isExercising() {
+        if (accHelper.getAccelerationSquareRoot() > 5) {
+            return true;
         }
-        return normal;
+        return false;
     }
 }

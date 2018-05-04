@@ -6,10 +6,15 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.nfc.Tag;
 import android.util.Log;
 
 import com.poli.actipuls.MockPulseGenerator;
+import com.poli.actipuls.data.RemoteDatabaseHelper;
 import com.poli.actipuls.localdata.LocalDbPulseContract.LocalDbPulseEntry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LocalDbHelper extends SQLiteOpenHelper {
 
@@ -22,7 +27,11 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     // database version
     private static final int DATABASE_VERSION = 1;
     // the pulse that will be further transmitted
-    int pulse;
+    private int pulse;
+    // the array of pulse data
+    private List<Integer> pulseList = new ArrayList<>(3);
+    // initialize the helper for the remote db
+    private RemoteDatabaseHelper remoteDbHelper = new RemoteDatabaseHelper();
 
     public LocalDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,6 +39,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
 
     /**
      * On create method
+     *
      * @param sqLiteDatabase
      */
     @Override
@@ -46,7 +56,6 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     }
 
     /**
-     *
      * @param db
      * @param oldVersion
      * @param newVersion
@@ -82,6 +91,45 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * This method calculates the final pulse that will be transmitted to the remote DB
+     */
+    public void calculateFinalPulse() {
+        Log.i(TAG, "Calculating final pulse");
+        int sum = 0;
+        if (!pulseList.isEmpty()) {
+            for (Integer pulse : pulseList) {
+                // we makee a sum of all Heartbeats in the list
+                sum += pulse;
+                Log.i(TAG, "Sum is " + sum);
+            }
+        } else {
+            Log.i(TAG, "List is empty");
+        }
+        // this is the avreage heartbeat in 10 seconds
+        float avreage = sum / 3;
+        // pulse is calculated at 60 seconds
+        // so it is the avreage of ten seconds multiplied by 6
+        pulse = Math.round(avreage * 6);
+        // send the data to the remote DB
+        remoteDbHelper.addItem(pulse, false);
+    }
+
+    /**
+     * This method adds the 10 second pulse measurement to a list
+     *
+     * @param pulse
+     */
+    private void addToPulseList(int pulse) {
+        if (pulseList.size() >= 3) {
+            Log.i(TAG, "Cleaning pulse list");
+            pulseList.clear();
+        }
+        Log.i(TAG, "Adding to the pulse list");
+        pulseList.add(pulse);
+        Log.i(TAG, "ADDED");
+    }
+
+    /**
      * Calculates a sum of all the beats received in the last 30 seconds
      */
     public void calculatePulse() {
@@ -94,9 +142,14 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         // setting the proccesed data entries to 1
         // return the data
         if (cursor.moveToFirst()) {
-            int sum = cursor.getInt(0);
-            Log.i(TAG, "!------------ HeartsBeats per 30 sec : " + sum);
-            pulse = sum * 2;
+            int data = cursor.getInt(0);
+            Log.i(TAG, "!------------ HeartsBeats per 10 sec : " + data);
+            // we add to the list the number of heartbeats per 10 seconds
+            addToPulseList(data);
+            // verify if the 10 second measurement is in the normal pulse spectrum
+            if(!isPulseNormal(data)){
+                remoteDbHelper.addAlertItem(data * 6);
+            }
         }
         cursor.close();
         setProcessed();
@@ -118,7 +171,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     }
 
     /**
-     *Method to delete the processed rows
+     * Method to delete the processed rows
      */
     public void deleteProcessedData() {
         // Define 'where' part of query.
@@ -149,11 +202,22 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     /**
      * Method to close the db
      */
-    public void closeLocalDb(){
+    public void closeLocalDb() {
         db.close();
     }
 
-    public int getPulse() {
-        return pulse;
+    /**
+     * This method calculates if the 10 sec measurement is a healthy pulse
+     * @param newData represents the 10 sec measurement
+     * @return
+     */
+    private boolean isPulseNormal(int newData) {
+        // calculate the pulse for 60 seconds
+        boolean normal = false;
+        if (newData >= 60 && newData <= 100) {
+            normal = true;
+        }
+        return normal;
     }
+
 }

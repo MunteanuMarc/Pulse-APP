@@ -11,7 +11,7 @@ public class AccelerometerHelper {
     private long lastUpdate;
     // initialize SensorManager
     private static String accelerometerData = "";
-    private float accelerationSquareRoot;
+    private static float accelerationSquareRoot;
     // Tag for Logging
     private final static String TAG = AccelerometerHelper.class.getSimpleName();
 
@@ -61,19 +61,5 @@ public class AccelerometerHelper {
      */
     public float getAccelerationSquareRoot() {
         return accelerationSquareRoot;
-    }
-
-
-    /**
-     * Verifies if there is movement according to the accelerometer
-     *
-     * @return
-     */
-    public boolean isExercising() {
-        if (getAccelerationSquareRoot() > 20) {
-            Log.i(TAG, "Acc is " + getAccelerometerData());
-            return true;
-        }
-        return false;
     }
 }

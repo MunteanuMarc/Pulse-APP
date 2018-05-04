@@ -22,7 +22,6 @@ public class ScheduleController {
 
     private Activity myActivity;
     private ScheduledExecutorService scheduler;
-    private RemoteDatabaseHelper remoteDbHelper = new RemoteDatabaseHelper();
 
     /**
      * Constructor
@@ -38,14 +37,23 @@ public class ScheduleController {
         // Calculate the Pulse every 30 seconds
         scheduler.scheduleAtFixedRate(new Runnable() {
                                           public void run() {
-                                              Log.i(TAG, "Calculating pulse ----------");
+                                              Log.i(TAG, "Calculating pulse 10 sec ----------");
                                               dbHelper.calculatePulse();
-                                              remoteDbHelper.addItem(dbHelper.getPulse());
+                                          }
+                                      },
+                10,
+                10,
+                TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(new Runnable() {
+                                          public void run() {
+                                              Log.i(TAG, "Calculating pulse 30 sec ----------");
+                                              dbHelper.calculateFinalPulse();
                                           }
                                       },
                 30,
                 30,
                 TimeUnit.SECONDS);
+
         // Clean the local database every 3 minutes
         scheduler.scheduleAtFixedRate(new Runnable() {
                                           public void run() {
