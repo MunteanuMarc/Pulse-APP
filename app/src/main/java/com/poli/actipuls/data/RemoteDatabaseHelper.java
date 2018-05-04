@@ -16,6 +16,9 @@ import com.poli.actipuls.model.HealthData;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * This class performs the remote database oprations
+ */
 public class RemoteDatabaseHelper {
 
     private MobileServiceTable<Activitati> actionsTable;
@@ -28,11 +31,15 @@ public class RemoteDatabaseHelper {
     // Tag for Logging
     private final static String TAG = RemoteDatabaseHelper.class.getSimpleName();
 
+    /**
+     * Constructor
+     */
     public RemoteDatabaseHelper() {
         client = AzureServiceAdapter.getInstance().getClient();
     }
 
     /**
+     * Method to get all the items from the table
      * @return
      * @throws ExecutionException
      * @throws InterruptedException
@@ -48,7 +55,7 @@ public class RemoteDatabaseHelper {
      *
      * @param item The item to Add
      */
-    public void addItemInTable(HealthData item) throws ExecutionException, InterruptedException {
+    private void addItemInTable(HealthData item) throws ExecutionException, InterruptedException {
         sensorTable = client.getTable("CosbucIuliana", HealthData.class);
         HealthData data = sensorTable.insert(item).get();
         Log.v(TAG, data + "");
@@ -59,11 +66,15 @@ public class RemoteDatabaseHelper {
      *
      * @return
      */
-    public MobileServiceClient getClient() {
+    private MobileServiceClient getClient() {
         client = AzureServiceAdapter.getInstance().getClient();
         return client;
     }
 
+    /**
+     * Method to add alert item
+     * @param pulse
+     */
     public void addAlertItem(int pulse){
         boolean alert = false;
         // verify if pulse is under the normal limit
@@ -76,6 +87,7 @@ public class RemoteDatabaseHelper {
             alert = true;
             Log.i(TAG, "Pulse is too high");
         }
+        // calls alertItem method
         addItem(pulse, alert);
     }
     /**
@@ -86,11 +98,13 @@ public class RemoteDatabaseHelper {
             return;
         }
         if(alert){
+            Log.i(TAG, "Message from the pacient should be here");
             // TODO implement code to ask and send message
         }
         // Create a new item
         final HealthData item = new HealthData();
 
+        // set the information to be sent to the remote db
         item.setAccelerometru(accHelper.getAccelerometerData());
         item.setPuls(String.valueOf(pulse));
         item.setAlert(alert);

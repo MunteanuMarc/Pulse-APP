@@ -14,13 +14,15 @@ import com.poli.actipuls.model.Activitati;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ListActionAdapter extends RecyclerView.Adapter<ListActionAdapter.ActivityViewHolder> {
 
 
     private Context mContext;
     private List<Activitati> resultList = new ArrayList<>();
-    SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy");
+    // date formatter style
+    private SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
 
     /**
@@ -30,6 +32,13 @@ public class ListActionAdapter extends RecyclerView.Adapter<ListActionAdapter.Ac
         this.mContext = context;
     }
 
+    /**
+     * Creates the List view holder
+     *
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public ActivityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Get the RecyclerView item layout
@@ -38,6 +47,12 @@ public class ListActionAdapter extends RecyclerView.Adapter<ListActionAdapter.Ac
         return new ActivityViewHolder(view);
     }
 
+    /**
+     * Binds the data to the list
+     *
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull ActivityViewHolder holder, int position) {
         Activitati action = resultList.get(position);
@@ -48,6 +63,11 @@ public class ListActionAdapter extends RecyclerView.Adapter<ListActionAdapter.Ac
 
     }
 
+    /**
+     * Gets the list item count
+     *
+     * @return
+     */
     @Override
     public int getItemCount() {
         return resultList.size();
@@ -74,10 +94,19 @@ public class ListActionAdapter extends RecyclerView.Adapter<ListActionAdapter.Ac
 
     }
 
+    /**
+     * Gets the result list
+     *
+     * @return
+     */
     public List<Activitati> getResultList() {
         return resultList;
     }
 
+    /**
+     * Sets the result list
+     * @param resultList
+     */
     public void setResultList(List<Activitati> resultList) {
         this.resultList = resultList;
     }

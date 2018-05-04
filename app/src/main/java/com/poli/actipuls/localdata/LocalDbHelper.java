@@ -100,7 +100,6 @@ public class LocalDbHelper extends SQLiteOpenHelper {
             for (Integer pulse : pulseList) {
                 // we makee a sum of all Heartbeats in the list
                 sum += pulse;
-                Log.i(TAG, "Sum is " + sum);
             }
         } else {
             Log.i(TAG, "List is empty");
@@ -121,12 +120,11 @@ public class LocalDbHelper extends SQLiteOpenHelper {
      */
     private void addToPulseList(int pulse) {
         if (pulseList.size() >= 3) {
-            Log.i(TAG, "Cleaning pulse list");
+           // cleaning pulse list
             pulseList.clear();
         }
-        Log.i(TAG, "Adding to the pulse list");
+        // adding to the pulse list
         pulseList.add(pulse);
-        Log.i(TAG, "ADDED");
     }
 
     /**
