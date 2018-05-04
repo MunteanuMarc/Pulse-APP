@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:background="@color/background"
     android:layout_height="56dp"
+    android:layout_marginTop="10dp"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
@@ -15,7 +16,7 @@
         android:background="@drawable/circle"
         android:fontFamily="sans-serif"
         android:gravity="center"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
         android:text="@string/_10m"/>
 
@@ -26,7 +27,7 @@
         android:layout_marginLeft="20dp"
         android:layout_weight="1"
         android:fontFamily="sans-serif"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
         android:text="@string/running_default"/>
     <TextView
@@ -36,7 +37,7 @@
         android:layout_marginLeft="20dp"
         android:layout_weight="1"
         android:fontFamily="sans-serif"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
         android:text="@string/_15_june"/>
 
