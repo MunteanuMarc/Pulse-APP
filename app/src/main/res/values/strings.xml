@@ -16,4 +16,6 @@
     <string name="disconnected">Disconnected</string>
     <string name="my_pulse_device">My Pulse Device</string>
     <string name="notfound">Device Unavailable</string>
+    <string name="view_as_calendar">View as Calendar</string>
+    <string name="view_as_list">View as List</string>
 </resources>

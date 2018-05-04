@@ -15,7 +15,7 @@
         android:layout_marginTop="40dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="20dp"
-        android:layout_weight=""
+        android:layout_weight="0"
         android:fontFamily="sans-serif"
         android:textColor="@android:color/white"
         android:textSize="23sp"

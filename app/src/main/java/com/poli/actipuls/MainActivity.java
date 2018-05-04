@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
@@ -59,7 +62,34 @@ public class MainActivity extends AppCompatActivity {
 
 
         } catch (Exception e) {
-            Log.v("Exception", "Interuuuuuuuuuuuuuuuuuuupteeeeeeeeeeeeeeed-----------------------");
+            Log.e("MainActivity", "Exception " + e);
+        }
+    }
+
+    /**
+     * Create a options menu
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_view, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.calendar:
+                Intent intent = new Intent(MainActivity.this, CalendarActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.list:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
