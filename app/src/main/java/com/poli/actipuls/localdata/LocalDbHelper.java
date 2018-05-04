@@ -21,6 +21,8 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     private final SQLiteDatabase db = getWritableDatabase();
     // database version
     private static final int DATABASE_VERSION = 1;
+    // the pulse that will be further transmitted
+    int pulse;
 
     public LocalDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -94,6 +96,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             int sum = cursor.getInt(0);
             Log.i(TAG, "!------------ HeartsBeats per 30 sec : " + sum);
+            pulse = sum * 2;
         }
         cursor.close();
         setProcessed();
@@ -148,5 +151,9 @@ public class LocalDbHelper extends SQLiteOpenHelper {
      */
     public void closeLocalDb(){
         db.close();
+    }
+
+    public int getPulse() {
+        return pulse;
     }
 }

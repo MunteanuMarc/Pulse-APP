@@ -1,12 +1,12 @@
 package com.poli.actipuls.localdata;
 
 import android.app.Activity;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import com.poli.actipuls.data.RemoteDatabaseHelper;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,6 +22,7 @@ public class ScheduleController {
 
     private Activity myActivity;
     private ScheduledExecutorService scheduler;
+    private RemoteDatabaseHelper remoteDbHelper = new RemoteDatabaseHelper();
 
     /**
      * Constructor
@@ -39,6 +40,7 @@ public class ScheduleController {
                                           public void run() {
                                               Log.i(TAG, "Calculating pulse ----------");
                                               dbHelper.calculatePulse();
+                                              remoteDbHelper.addItem(dbHelper.getPulse());
                                           }
                                       },
                 30,

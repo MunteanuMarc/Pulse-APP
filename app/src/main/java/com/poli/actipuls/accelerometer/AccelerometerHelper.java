@@ -1,13 +1,17 @@
 package com.poli.actipuls.accelerometer;
 
+import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-public class AccelerometerHelper {
+public class AccelerometerHelper  implements SensorEventListener {
 
+    // TODO accelerometer not working properly anymore - check 
 
     private long lastUpdate;
+    // initialize SensorManager
     private String accelerometerData = "";
     private float accelerationSquareRoot;
     // Tag for Logging
@@ -49,6 +53,7 @@ public class AccelerometerHelper {
      * @return
      */
     public String getAccelerometerData() {
+        Log.i(TAG, "Acc data is" + accelerometerData);
         return accelerometerData;
     }
 
@@ -60,4 +65,27 @@ public class AccelerometerHelper {
         return accelerationSquareRoot;
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            getAccelerometer(event);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // not implemented
+    }
+    /**
+     * Verifies if there is movement according to the accelerometer
+     *
+     * @return
+     */
+    public boolean isExercising() {
+        if (getAccelerationSquareRoot() > 20) {
+            Log.i(TAG, "Acc is " + getAccelerometerData());
+            return true;
+        }
+        return false;
+    }
 }

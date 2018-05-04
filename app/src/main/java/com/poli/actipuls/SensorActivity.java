@@ -10,11 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -27,14 +23,13 @@ import android.widget.Toast;
 
 import com.poli.actipuls.accelerometer.AccelerometerHelper;
 import com.poli.actipuls.bluetooth.BluetoothHelper;
-import com.poli.actipuls.data.DatabaseHelper;
+import com.poli.actipuls.data.RemoteDatabaseHelper;
 import com.poli.actipuls.localdata.ScheduleController;
-import com.poli.actipuls.model.HealthData;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SensorActivity extends AppCompatActivity implements SensorEventListener {
+public class SensorActivity extends AppCompatActivity{
 
     // scan period in milliseconds
     private static final long SCAN_PERIOD = 10000;
@@ -45,8 +40,9 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
     private BluetoothAdapter blueToothAdapter;
     private BluetoothHelper btHelper = new BluetoothHelper(this);
     private BluetoothDevice myDevice;
+    private AccelerometerHelper acc = new AccelerometerHelper();
     private BluetoothLeScanner scanner;
-    private DatabaseHelper dbHelper;
+    private RemoteDatabaseHelper dbHelper;
     private ProgressBar progressBar;
     private ScheduleController scheduleControl;
     private SensorManager sensorManager;
@@ -64,7 +60,6 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
             }
         }
     };
-    private AccelerometerHelper accHelper = new AccelerometerHelper();
     private Handler handler;
     private boolean isScanning = false;
     private Map<String, BluetoothDevice> scanResults;
@@ -115,8 +110,6 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
             updateConnectionState(R.string.connecting);
             connectGattService();
             scheduleControl.startScheduler();
-            // TODO method addItem adds mock data to the azure database, must fix to add real data
-            // addItem();
             buttonStop.setVisibility(View.VISIBLE);
             buttonStart.setVisibility(View.INVISIBLE);
         });
@@ -133,7 +126,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
 
         });
 
-        dbHelper = new DatabaseHelper();
+        dbHelper = new RemoteDatabaseHelper();
     }
 
     /**
@@ -234,7 +227,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
         registerReceiver(mGattUpdateReceiver, updateIntentFilter());
         // register this class as a listener for the orientation and
         // accelerometer sensors
-        sensorManager.registerListener(this,
+        sensorManager.registerListener(acc,
                 sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -246,77 +239,7 @@ public class SensorActivity extends AppCompatActivity implements SensorEventList
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mGattUpdateReceiver);
-        sensorManager.unregisterListener(this);
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            accHelper.getAccelerometer(event);
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // not implemented
-    }
-
-    /**
-     * Verifies if there is movement according to the accelerometer
-     *
-     * @return
-     */
-    public boolean isExercising() {
-        if (accHelper.getAccelerationSquareRoot() > 20) {
-            Log.i(TAG, "Acc is " + accHelper.getAccelerometerData());
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Add a new item
-     */
-    public void addItem() {
-        if (dbHelper.getClient() == null) {
-            return;
-        }
-
-        // Create a new item
-        final HealthData item = new HealthData();
-
-        item.setAccelerometru(accHelper.getAccelerometerData());
-        item.setPuls(String.valueOf(MockPulseGenerator.generatePulse()));
-
-        // Insert the new item
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    dbHelper.addItemInTable(item);
-
-                } catch (final Exception e) {
-                    Log.e(TAG, "insert Error" + e);
-                }
-                return null;
-            }
-        };
-
-        runAsyncTask(task);
-    }
-
-    /**
-     * Run an ASync task on the corresponding executor
-     *
-     * @param task
-     * @return
-     */
-    private AsyncTask<Void, Void, Void> runAsyncTask(AsyncTask<Void, Void, Void> task) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            return task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            return task.execute();
-        }
+        sensorManager.unregisterListener(acc);
     }
 
     /**
