@@ -15,7 +15,7 @@
         android:fontFamily="sans-serif"
         android:gravity="center"
         android:text="@string/start"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="18sp" />
 
     <Button
@@ -28,7 +28,8 @@
         android:fontFamily="sans-serif"
         android:gravity="center"
         android:text="@string/stop"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
+        android:background="@drawable/bg_button"
         android:textSize="18sp" />
 
     <TextView
@@ -36,11 +37,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="100dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:layout_alignLeft="@id/btnStop"
         android:fontFamily="sans-serif"
         android:text="@string/my_pulse_device"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="18sp" />
 
     <TextView
@@ -51,9 +52,11 @@
         android:layout_marginLeft="20dp"
         android:fontFamily="sans-serif"
         android:text="@string/connection"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
-  <ProgressBar
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:layout_marginBottom="20dp"/>
+    <ProgressBar
         android:id="@+id/progressBar_cyclic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,6 +66,6 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:max="100"
-      />
+        />
 
 </RelativeLayout>
