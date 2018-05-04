@@ -16,8 +16,6 @@ public class AccelerometerHelper {
     // initialize SensorManager
     private static String accelerometerData = "";
     private static float accelerationSquareRoot;
-    // Tag for Logging
-    private final static String TAG = AccelerometerHelper.class.getSimpleName();
 
     /**
      * Method to get the accelerometer data
@@ -40,8 +38,7 @@ public class AccelerometerHelper {
                 / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
         long actualTime = event.timestamp;
         // verify if there is the slightest movement
-        if (accelerationSquareRoot >= 1) {
-            Log.i(TAG, "is moving " + getAccelerometerData());
+        if (accelerationSquareRoot >= 3) {
             if (actualTime - lastUpdate < 200) {
                 return;
             }
@@ -56,7 +53,6 @@ public class AccelerometerHelper {
      * @return
      */
     public String getAccelerometerData() {
-        Log.i(TAG, "Acc data is" + accelerometerData);
         return accelerometerData;
     }
 
