@@ -18,4 +18,5 @@
     <string name="notfound">Device Unavailable</string>
     <string name="view_as_calendar">View as Calendar</string>
     <string name="view_as_list">View as List</string>
+    <string name="found">Device found</string>
 </resources>

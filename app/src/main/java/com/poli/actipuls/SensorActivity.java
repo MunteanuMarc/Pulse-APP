@@ -195,14 +195,15 @@ public class SensorActivity extends AppCompatActivity  implements SensorEventLis
         for (String deviceAddress : scanResults.keySet()) {
             if (deviceAddress.equals(ARDUINO_ADDRESS)) {
                 myDevice = scanResults.get(deviceAddress);
+                updateConnectionState(R.string.found);
                 Log.d("SCAN", "Found device: " + deviceAddress);
                 buttonStart.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
+                return;
             } else {
                 updateConnectionState(R.string.notfound);
                 progressBar.setVisibility(View.GONE);
                 buttonStart.setVisibility(View.VISIBLE);
-                Toast.makeText(getApplicationContext(), "Device unavailable", Toast.LENGTH_LONG).show();
             }
         }
     }

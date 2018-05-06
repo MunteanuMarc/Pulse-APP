@@ -50,8 +50,8 @@ public class BluetoothHelper {
         @Override
         // New services discovered
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            Log.i(TAG, "Something happened bluetooth");
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                // TODO - implement code for Arduino
                 Log.i(TAG, "Services Discovered.");
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
@@ -63,6 +63,7 @@ public class BluetoothHelper {
         public void onCharacteristicRead(BluetoothGatt gatt,
                                          BluetoothGattCharacteristic characteristic,
                                          int status) {
+            Log.i(TAG, "Something happened bluetooth");
             // TODO - Implement for Arduino
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.i(TAG, "Characteristics read.");
