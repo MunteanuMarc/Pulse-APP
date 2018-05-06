@@ -19,4 +19,7 @@
     <string name="view_as_calendar">View as Calendar</string>
     <string name="view_as_list">View as List</string>
     <string name="found">Device found</string>
+    <string name="login">LOGIN</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
 </resources>

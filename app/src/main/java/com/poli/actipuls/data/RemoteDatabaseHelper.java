@@ -11,6 +11,7 @@ import com.poli.actipuls.MockPulseGenerator;
 import com.poli.actipuls.accelerometer.AccelerometerHelper;
 import com.poli.actipuls.model.Activitati;
 import com.poli.actipuls.model.HealthData;
+import com.poli.actipuls.model.LoginModel;
 
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class RemoteDatabaseHelper {
 
     /**
      * Method to get all the items from the table
+     *
      * @return
      * @throws ExecutionException
      * @throws InterruptedException
@@ -49,6 +51,13 @@ public class RemoteDatabaseHelper {
         actionsTable = client.getTable("Consultatii", Activitati.class);
         return actionsTable.execute().get();
     }
+
+    public List<LoginModel> getLoginTable() throws ExecutionException, InterruptedException, MobileServiceException {
+        return client.getTable("logintable", LoginModel.class)
+                .execute()
+                .get();
+    }
+
 
     /**
      * Add an item to the HealthData tracking Table
@@ -73,9 +82,10 @@ public class RemoteDatabaseHelper {
 
     /**
      * Method to add alert item
+     *
      * @param pulse
      */
-    public void addAlertItem(int pulse){
+    public void addAlertItem(int pulse) {
         boolean alert = false;
         // verify if pulse is under the normal limit
         if (pulse < 60) {
@@ -90,6 +100,7 @@ public class RemoteDatabaseHelper {
         // calls alertItem method
         addItem(pulse, alert);
     }
+
     /**
      * Add a new item
      */
@@ -97,7 +108,7 @@ public class RemoteDatabaseHelper {
         if (getClient() == null) {
             return;
         }
-        if(alert){
+        if (alert) {
             Log.i(TAG, "Message from the pacient should be here");
             // TODO implement code to ask and send message
         }
@@ -139,6 +150,7 @@ public class RemoteDatabaseHelper {
             return task.execute();
         }
     }
+
     /**
      * Verifies if there is movement according to the accelerometer
      *

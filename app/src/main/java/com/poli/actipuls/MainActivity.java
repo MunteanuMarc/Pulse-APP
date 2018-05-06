@@ -14,8 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
-import com.poli.actipuls.data.AzureServiceAdapter;
 import com.poli.actipuls.data.RemoteDatabaseHelper;
 import com.poli.actipuls.data.ListActionAdapter;
 import com.poli.actipuls.model.Activitati;
@@ -29,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     private List<Activitati> results;
     private RecyclerView activitiesRecyclerView;
     private ListActionAdapter mAdapter;
-    private MobileServiceClient client;
     private RemoteDatabaseHelper dbHelper;
 
 
@@ -46,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         try {
-            AzureServiceAdapter.Initialize(this);
             dbHelper = new RemoteDatabaseHelper();
 
             // Set local attributes to corresponding views
