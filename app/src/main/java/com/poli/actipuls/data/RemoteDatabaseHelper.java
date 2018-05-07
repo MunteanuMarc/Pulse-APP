@@ -7,6 +7,7 @@ import android.util.Log;
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.microsoft.windowsazure.mobileservices.MobileServiceException;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
+import com.microsoft.windowsazure.mobileservices.table.query.QueryOrder;
 import com.poli.actipuls.MockPulseGenerator;
 import com.poli.actipuls.accelerometer.AccelerometerHelper;
 import com.poli.actipuls.model.Activitati;
@@ -47,13 +48,16 @@ public class RemoteDatabaseHelper {
      * @throws InterruptedException
      * @throws MobileServiceException
      */
-    public List<Activitati> getItemsFromTable() throws ExecutionException, InterruptedException, MobileServiceException {
-        actionsTable = client.getTable("Consultatii", Activitati.class);
-        return actionsTable.execute().get();
+    public List<Activitati> getItemsFromTable(String userId) throws ExecutionException, InterruptedException, MobileServiceException {
+        actionsTable = client.getTable("recomandari_tabel", Activitati.class);
+        return actionsTable.where()
+                .field("id_pacient").eq(userId)
+                .orderBy("data_recomandare", QueryOrder.Ascending)
+                .execute().get();
     }
 
     public List<LoginModel> getLoginTable() throws ExecutionException, InterruptedException, MobileServiceException {
-        return client.getTable("logintable", LoginModel.class)
+        return client.getTable("login_pacienti_tabel", LoginModel.class)
                 .execute()
                 .get();
     }
@@ -65,7 +69,7 @@ public class RemoteDatabaseHelper {
      * @param item The item to Add
      */
     private void addItemInTable(HealthData item) throws ExecutionException, InterruptedException {
-        sensorTable = client.getTable("CosbucIuliana", HealthData.class);
+        sensorTable = client.getTable("senzori_tabel", HealthData.class);
         HealthData data = sensorTable.insert(item).get();
         Log.v(TAG, data + "");
     }
@@ -85,7 +89,7 @@ public class RemoteDatabaseHelper {
      *
      * @param pulse
      */
-    public void addAlertItem(int pulse) {
+    public void addAlertItem(int pulse, String userId) {
         boolean alert = false;
         // verify if pulse is under the normal limit
         if (pulse < 60) {
@@ -98,13 +102,13 @@ public class RemoteDatabaseHelper {
             Log.i(TAG, "Pulse is too high");
         }
         // calls alertItem method
-        addItem(pulse, alert);
+        addItem(pulse, alert, userId);
     }
 
     /**
      * Add a new item
      */
-    public void addItem(int pulse, boolean alert) {
+    public void addItem(int pulse, boolean alert, String userId) {
         if (getClient() == null) {
             return;
         }
@@ -119,6 +123,7 @@ public class RemoteDatabaseHelper {
         item.setAccelerometru(accHelper.getAccelerometerData());
         item.setPuls(String.valueOf(pulse));
         item.setAlert(alert);
+        item.setUserId(userId);
 
         // Insert the new item
         AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {

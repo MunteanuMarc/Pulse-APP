@@ -7,13 +7,13 @@ public class Activitati {
     @com.google.gson.annotations.SerializedName("id")
     private String id;
 
-    @com.google.gson.annotations.SerializedName("data")
+    @com.google.gson.annotations.SerializedName("data_recomandare")
     private Date data;
 
-    @com.google.gson.annotations.SerializedName("recomandare")
+    @com.google.gson.annotations.SerializedName("tip_recomandare")
     private String recomandare;
 
-    @com.google.gson.annotations.SerializedName("durata")
+    @com.google.gson.annotations.SerializedName("durata_recomandare")
     private int durata;
 
     public Activitati() {

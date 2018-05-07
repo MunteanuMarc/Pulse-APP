@@ -8,14 +8,17 @@ public class HealthData {
     @com.google.gson.annotations.SerializedName("id")
     private String id;
 
-    @com.google.gson.annotations.SerializedName("Puls")
+    @com.google.gson.annotations.SerializedName("puls")
     private String puls;
 
-    @com.google.gson.annotations.SerializedName("Accelerometru")
+    @com.google.gson.annotations.SerializedName("accelerometru")
     private String accelerometru;
 
     @com.google.gson.annotations.SerializedName("alerta")
     private boolean alert;
+
+    @com.google.gson.annotations.SerializedName("id_pacient")
+    private String userId;
 
     public HealthData() {
     }
@@ -45,12 +48,20 @@ public class HealthData {
         this.accelerometru = accelerometru;
     }
 
-    public boolean getAlert() {
+    public boolean isAlert() {
         return alert;
     }
 
     public void setAlert(boolean alert) {
         this.alert = alert;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
 

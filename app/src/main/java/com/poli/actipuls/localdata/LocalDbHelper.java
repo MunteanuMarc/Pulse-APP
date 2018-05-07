@@ -93,7 +93,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     /**
      * This method calculates the final pulse that will be transmitted to the remote DB
      */
-    public void calculateFinalPulse() {
+    public void calculateFinalPulse(String userId) {
         Log.i(TAG, "Calculating final pulse");
         int sum = 0;
         if (!pulseList.isEmpty()) {
@@ -110,7 +110,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         // so it is the avreage of ten seconds multiplied by 6
         pulse = Math.round(avreage * 6);
         // send the data to the remote DB
-        remoteDbHelper.addItem(pulse, false);
+        remoteDbHelper.addItem(pulse, false, userId);
     }
 
     /**
@@ -130,7 +130,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     /**
      * Calculates a sum of all the beats received in the last 30 seconds
      */
-    public void calculatePulse() {
+    public void calculatePulse(String userId) {
         // query string to calculate the sum of all heartbeats in the last 30 seconds
         String sql = "SELECT SUM(" + LocalDbPulseEntry.COLUMN_PULSE + ") FROM " + LocalDbPulseEntry.TABLE_NAME + " WHERE " + LocalDbPulseEntry.COLUMN_PROCESSED + " = 0";
         // query string to set table entried as processed in order for cleaning
@@ -146,7 +146,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
             addToPulseList(data);
             // verify if the 10 second measurement is in the normal pulse spectrum
             if(!isPulseNormal(data)){
-                remoteDbHelper.addAlertItem(data * 6);
+                remoteDbHelper.addAlertItem(data * 6, userId);
             }
         }
         cursor.close();

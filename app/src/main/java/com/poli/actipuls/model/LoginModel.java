@@ -10,6 +10,9 @@ public class LoginModel {
     @com.google.gson.annotations.SerializedName("password")
     private String password;
 
+    @com.google.gson.annotations.SerializedName("id_pacient")
+    private String userId;
+
     public String getId() {
         return id;
     }
@@ -32,5 +35,13 @@ public class LoginModel {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

@@ -32,13 +32,13 @@ public class ScheduleController {
         dbHelper = new LocalDbHelper(myActivity);
     }
 
-    public void startScheduler() {
+    public void startScheduler(String userId) {
         scheduler = Executors.newScheduledThreadPool(1);
         // Calculate the Pulse every 30 seconds
         scheduler.scheduleAtFixedRate(new Runnable() {
                                           public void run() {
                                               Log.i(TAG, "Calculating pulse 10 sec ----------");
-                                              dbHelper.calculatePulse();
+                                              dbHelper.calculatePulse(userId);
                                           }
                                       },
                 10,
@@ -47,7 +47,7 @@ public class ScheduleController {
         scheduler.scheduleAtFixedRate(new Runnable() {
                                           public void run() {
                                               Log.i(TAG, "Calculating pulse 30 sec ----------");
-                                              dbHelper.calculateFinalPulse();
+                                              dbHelper.calculateFinalPulse(userId);
                                           }
                                       },
                 30,

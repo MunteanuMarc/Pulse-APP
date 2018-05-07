@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView activitiesRecyclerView;
     private ListActionAdapter mAdapter;
     private RemoteDatabaseHelper dbHelper;
+    private String userId;
 
 
     @Override
@@ -35,10 +36,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        userId = getIntent().getStringExtra("USER_ID");
+
+        Log.i("Main","User id id: " + userId );
+
         // Setup FAB to open EditorActivity
         FloatingActionButton fab =  findViewById(R.id.fab);
         fab.setOnClickListener((View v) -> {
             Intent intent = new Intent(MainActivity.this, SensorActivity.class);
+            intent.putExtra("USER_ID", userId);
             startActivity(intent);
         });
 
@@ -101,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             protected Void doInBackground(Void... params) {
 
                 try {
-                    final List<Activitati> results = dbHelper.getItemsFromTable();
+                    final List<Activitati> results = dbHelper.getItemsFromTable(userId);
 
                     runOnUiThread(new Runnable() {
                         @Override

@@ -48,6 +48,7 @@ public class SensorActivity extends AppCompatActivity  implements SensorEventLis
     private ProgressBar progressBar;
     private ScheduleController scheduleControl;
     private SensorManager sensorManager;
+    private String userId;
     private Button buttonStart, buttonStop;
     private TextView connectionState;
     // Broadcast Receiver to update according to state
@@ -83,6 +84,8 @@ public class SensorActivity extends AppCompatActivity  implements SensorEventLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
+        // get the user id for this session
+        userId = getIntent().getStringExtra("USER_ID");
         // initialize accelerometerHelper
         acc = new AccelerometerHelper();
         // initialize SensorManager
@@ -112,7 +115,7 @@ public class SensorActivity extends AppCompatActivity  implements SensorEventLis
             //on click
             updateConnectionState(R.string.connecting);
             connectGattService();
-            scheduleControl.startScheduler();
+            scheduleControl.startScheduler(userId);
             buttonStop.setVisibility(View.VISIBLE);
             buttonStart.setVisibility(View.INVISIBLE);
         });
