@@ -37,6 +37,7 @@ public class AccelerometerHelper {
         accelerationSquareRoot = (x * x + y * y + z * z)
                 / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
         long actualTime = event.timestamp;
+        accelerometerData = String.valueOf(x + "#" + y + "#" + z);
         // verify if there is the slightest movement
         if (accelerationSquareRoot >= 3) {
             if (actualTime - lastUpdate < 200) {

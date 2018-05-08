@@ -13,6 +13,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -27,8 +29,11 @@ import com.poli.actipuls.accelerometer.AccelerometerHelper;
 import com.poli.actipuls.bluetooth.BluetoothHelper;
 import com.poli.actipuls.data.RemoteDatabaseHelper;
 import com.poli.actipuls.localdata.ScheduleController;
+import com.poli.actipuls.model.Activitati;
+import com.poli.actipuls.model.ValoriPuls;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SensorActivity extends AppCompatActivity  implements SensorEventListener {
@@ -49,6 +54,8 @@ public class SensorActivity extends AppCompatActivity  implements SensorEventLis
     private ScheduleController scheduleControl;
     private SensorManager sensorManager;
     private String userId;
+    private static int pulsMin;
+    private static int pulsMax;
     private Button buttonStart, buttonStop;
     private TextView connectionState;
     // Broadcast Receiver to update according to state
@@ -84,8 +91,11 @@ public class SensorActivity extends AppCompatActivity  implements SensorEventLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
+        dbHelper = new RemoteDatabaseHelper();
         // get the user id for this session
         userId = getIntent().getStringExtra("USER_ID");
+        // get the normal values of the puls that the doctor established
+        getValuesFromTable(userId);
         // initialize accelerometerHelper
         acc = new AccelerometerHelper();
         // initialize SensorManager
@@ -273,4 +283,63 @@ public class SensorActivity extends AppCompatActivity  implements SensorEventLis
         // not implemented
     }
 
+    /**
+     * Refresh the list with the items in the Table
+     */
+    private void getValuesFromTable(String userId) {
+
+        // Get the items that weren't marked as completed and add them in the
+        // adapter
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+
+                try {
+                    final List<ValoriPuls> results = dbHelper.getValuesFromTable(userId);
+                    runOnUiThread(() -> {
+                        SensorActivity.setPulsMin(results.get(0).getPulsMIn());
+                        SensorActivity.setPulsMax(results.get(0).getPulsMax());
+                            Log.i(TAG, "puls valori ----" + SensorActivity.getPulsMax() +" "+ SensorActivity.getPulsMin());
+                      });
+                } catch (final Exception e) {
+                    Log.v("Error", "Error");
+                }
+
+                return null;
+            }
+        };
+
+        runAsyncTask(task);
+    }
+
+
+    /**
+     * Run an ASync task on the corresponding executor
+     *
+     * @param task
+     * @return
+     */
+    private AsyncTask<Void, Void, Void> runAsyncTask(AsyncTask<Void, Void, Void> task) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            return task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            return task.execute();
+        }
+    }
+
+    public static int getPulsMin() {
+        return pulsMin;
+    }
+
+    public static int getPulsMax() {
+        return pulsMax;
+    }
+
+    public static void setPulsMin(int pulsMin) {
+        SensorActivity.pulsMin = pulsMin;
+    }
+
+    public static void setPulsMax(int pulsMax) {
+        SensorActivity.pulsMax = pulsMax;
+    }
 }

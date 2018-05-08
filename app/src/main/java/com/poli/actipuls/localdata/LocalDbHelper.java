@@ -10,6 +10,7 @@ import android.nfc.Tag;
 import android.util.Log;
 
 import com.poli.actipuls.MockPulseGenerator;
+import com.poli.actipuls.SensorActivity;
 import com.poli.actipuls.data.RemoteDatabaseHelper;
 import com.poli.actipuls.localdata.LocalDbPulseContract.LocalDbPulseEntry;
 
@@ -32,6 +33,8 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     private List<Integer> pulseList = new ArrayList<>(3);
     // initialize the helper for the remote db
     private RemoteDatabaseHelper remoteDbHelper = new RemoteDatabaseHelper();
+    // query string to calculate the sum of all heartbeats in the last 30 seconds
+    private final static String SQL_SUM = "SELECT SUM(" + LocalDbPulseEntry.COLUMN_PULSE + ") FROM " + LocalDbPulseEntry.TABLE_NAME + " WHERE " + LocalDbPulseEntry.COLUMN_PROCESSED + " = 0";
 
     public LocalDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -98,7 +101,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         int sum = 0;
         if (!pulseList.isEmpty()) {
             for (Integer pulse : pulseList) {
-                // we makee a sum of all Heartbeats in the list
+                // we make a sum of all Heartbeats in the list
                 sum += pulse;
             }
         } else {
@@ -106,9 +109,11 @@ public class LocalDbHelper extends SQLiteOpenHelper {
         }
         // this is the avreage heartbeat in 10 seconds
         float avreage = sum / 3;
+        Log.i(TAG, "Avreage per 10 seconds is" + avreage );
         // pulse is calculated at 60 seconds
         // so it is the avreage of ten seconds multiplied by 6
         pulse = Math.round(avreage * 6);
+        Log.i(TAG, "Final pulse is" + pulse );
         // send the data to the remote DB
         remoteDbHelper.addItem(pulse, false, userId);
     }
@@ -131,12 +136,8 @@ public class LocalDbHelper extends SQLiteOpenHelper {
      * Calculates a sum of all the beats received in the last 30 seconds
      */
     public void calculatePulse(String userId) {
-        // query string to calculate the sum of all heartbeats in the last 30 seconds
-        String sql = "SELECT SUM(" + LocalDbPulseEntry.COLUMN_PULSE + ") FROM " + LocalDbPulseEntry.TABLE_NAME + " WHERE " + LocalDbPulseEntry.COLUMN_PROCESSED + " = 0";
-        // query string to set table entried as processed in order for cleaning
-        Log.i(TAG, sql);
         // execute the raw queries
-        Cursor cursor = db.rawQuery(sql, null);
+        Cursor cursor = db.rawQuery(SQL_SUM, null);
         // setting the proccesed data entries to 1
         // return the data
         if (cursor.moveToFirst()) {
@@ -144,9 +145,11 @@ public class LocalDbHelper extends SQLiteOpenHelper {
             Log.i(TAG, "!------------ HeartsBeats per 10 sec : " + data);
             // we add to the list the number of heartbeats per 10 seconds
             addToPulseList(data);
+            // calculate per 60 seconds
+            int finalData = data * 6;
             // verify if the 10 second measurement is in the normal pulse spectrum
-            if(!isPulseNormal(data)){
-                remoteDbHelper.addAlertItem(data * 6, userId);
+            if(!isPulseNormal(finalData)){
+                remoteDbHelper.addAlertItem(finalData, userId);
             }
         }
         cursor.close();
@@ -212,7 +215,7 @@ public class LocalDbHelper extends SQLiteOpenHelper {
     private boolean isPulseNormal(int newData) {
         // calculate the pulse for 60 seconds
         boolean normal = false;
-        if (newData >= 60 && newData <= 100) {
+        if (newData >= SensorActivity.getPulsMin() && newData <= SensorActivity.getPulsMax()) {
             normal = true;
         }
         return normal;

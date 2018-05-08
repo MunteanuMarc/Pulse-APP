@@ -109,16 +109,13 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     final List<Activitati> results = dbHelper.getItemsFromTable(userId);
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mAdapter.getResultList().clear();
+                    runOnUiThread(() -> {
+                        mAdapter.getResultList().clear();
 
-                            mAdapter.setResultList(results);
+                        mAdapter.setResultList(results);
 
-                            // Link the adapter to the RecyclerView
-                            activitiesRecyclerView.setAdapter(mAdapter);
-                        }
+                        // Link the adapter to the RecyclerView
+                        activitiesRecyclerView.setAdapter(mAdapter);
                     });
                 } catch (final Exception e) {
                     Log.v("Error", "Error");
