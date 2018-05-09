@@ -1,0 +1,59 @@
+package com.poli.actipuls.accelerometer;
+
+import android.app.Instrumentation;
+import android.hardware.SensorManager;
+import android.support.test.rule.ActivityTestRule;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
+
+
+public class AccelerometerHelperTest {
+
+    //test rule enables launching the activity
+    @Rule
+    public ActivityTestRule<AccelerometerHelper> mActivityTestRule = new ActivityTestRule<AccelerometerHelper>( AccelerometerHelper.class );
+    private AccelerometerHelper accelerometerHelper = null;
+
+    Instrumentation.ActivityMonitor monitor = getInstrumentation().addMonitor( AccelerometerHelper.class.getName(), null, false );
+
+    @Before
+    public void setUp() throws Exception {
+        accelerometerHelper = mActivityTestRule.getActivity();
+    }
+
+
+    /**
+     * test to simulate Accelerometer-failed
+     **/
+    @Test
+    public void testShake() throws InterruptedException {
+        accelerometerHelper.accelerationSquareRoot( new float[]{0, 0, 0}, SensorManager.SENSOR_ACCELEROMETER );
+        //Required because method only allows one shake per 100ms
+        Thread.sleep( 500 );
+        accelerometerHelper.accelerationSquareRoot( new float[]{300, 300, 300}, SensorManager.SENSOR_ACCELEROMETER );
+        Assert.assertTrue( "Counter: " + accelerometerHelper, accelerometerHelper.getAccelerationSquareRoot() > 0 );
+    }
+
+    @Test
+    public void getAccelerometer() {
+    }
+
+    @Test
+    public void getAccelerometerData() {
+    }
+
+    @Test
+    public void getAccelerationSquareRoot() {
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        accelerometerHelper = null;
+    }
+}
